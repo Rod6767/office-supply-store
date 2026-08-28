@@ -28,22 +28,22 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
   const role = document.getElementById('auth-role').value;
 
   // Try Sign In
-  let { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   // If User Not Found, Try Sign Up
   if (error) {
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
     if (signUpError) return alert(signUpError.message);
     
     // Save User Profile Data
-    await supabase.from('profiles').insert([{
+    await supabaseClient.from('profiles').insert([{
       id: signUpData.user.id,
       full_name: fullName,
       gcash_number: gcash,
       role: role
     }]);
     alert('Registration successful!');
-    data.user = signUpData.user;
+    data = { user: signUpData.user };
   }
   
   currentUser = data.user;
@@ -52,10 +52,10 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
 });
 
 async function updateAuthUI() {
-  const session = (await supabase.auth.getSession()).data.session;
+  const session = (await supabaseClient.auth.getSession()).data.session;
   if (session) {
     currentUser = session.user;
-    const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    const { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
     currentProfile = data;
     document.getElementById('nav-auth').style.display = 'none';
     document.getElementById('nav-dashboard').style.display = 'inline';
@@ -68,7 +68,7 @@ async function updateAuthUI() {
 }
 
 async function handleLogout() {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   currentUser = null;
   currentProfile = null;
   updateAuthUI();
@@ -77,7 +77,8 @@ async function handleLogout() {
 
 // Product Fetching & Reviews Display
 async function fetchProducts() {
-  const { data: products } = await supabase.from('products').select('*');
+  const { data: products } = await supabaseClient.from('products').select('*');
+  if (!products) return;
   const renderContainer = (containerId) => {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -124,7 +125,7 @@ async function initiatePayment(amount, title, productId, sellerId) {
   const data = await res.json();
   if(data.checkoutUrl) {
     // Record Order in Supabase as Pending
-    await supabase.from('orders').insert([{
+    await supabaseClient.from('orders').insert([{
       buyer_id: currentUser.id,
       seller_id: sellerId,
       product_id: productId,
@@ -140,7 +141,7 @@ async function initiatePayment(amount, title, productId, sellerId) {
 // Post Product
 document.getElementById('add-product-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  await supabase.from('products').insert([{
+  await supabaseClient.from('products').insert([{
     seller_id: currentUser.id,
     title: document.getElementById('prod-title').value,
     description: document.getElementById('prod-desc').value,
@@ -157,7 +158,7 @@ async function submitReview(productId) {
   const rating = document.getElementById(`rating-${productId}`).value;
   const comment = document.getElementById(`review-${productId}`).value;
 
-  await supabase.from('reviews').insert([{
+  await supabaseClient.from('reviews').insert([{
     product_id: productId,
     buyer_id: currentUser.id,
     rating: parseInt(rating),
@@ -171,12 +172,16 @@ async function loadDashboard() {
   if(!currentProfile) return;
   if(currentProfile.role === 'seller') {
     document.getElementById('seller-section').style.display = 'block';
-    const { data } = await supabase.from('orders').select('*, products(title)').eq('seller_id', currentUser.id);
-    document.getElementById('sales-history').innerHTML = data.map(o => `<p>Product: ${o.products?.title} | Amount: ₱${o.amount} | Status: ${o.status}</p>`).join('');
+    const { data } = await supabaseClient.from('orders').select('*, products(title)').eq('seller_id', currentUser.id);
+    if (data) {
+      document.getElementById('sales-history').innerHTML = data.map(o => `<p>Product: ${o.products?.title} | Amount: ₱${o.amount} | Status: ${o.status}</p>`).join('');
+    }
   } else {
     document.getElementById('buyer-section').style.display = 'block';
-    const { data } = await supabase.from('orders').select('*, products(title)').eq('buyer_id', currentUser.id);
-    document.getElementById('purchase-history').innerHTML = data.map(o => `<p>Product: ${o.products?.title} | Amount: ₱${o.amount} | Status: ${o.status}</p>`).join('');
+    const { data } = await supabaseClient.from('orders').select('*, products(title)').eq('buyer_id', currentUser.id);
+    if (data) {
+      document.getElementById('purchase-history').innerHTML = data.map(o => `<p>Product: ${o.products?.title} | Amount: ₱${o.amount} | Status: ${o.status}</p>`).join('');
+    }
   }
 }
 
