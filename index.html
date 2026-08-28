@@ -120,7 +120,9 @@
           window.voiceflow.chat.load({
             verify: { projectID: '6a91d30dd80dce2ccba4a1f7' },
             url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production'
+            voice: {
+              url: "https://runtime-api.voiceflow.com"
+            }
           });
         }
         v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
