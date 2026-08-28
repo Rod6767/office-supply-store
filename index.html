@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeskCraft | Premium Office Supplies</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><h1>DeskCraft</h1></div>
+    <nav>
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('store')">Store Page</a>
+      <a onclick="showPage('about')">About Us</a>
+      <a onclick="showPage('contacts')">Contacts</a>
+      <a id="nav-dashboard" onclick="showPage('dashboard')" style="display:none;">Dashboard</a>
+      <a id="nav-auth" onclick="openAuthModal()">Login / Register</a>
+      <a id="nav-logout" onclick="handleLogout()" style="display:none;">Logout</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="page-home">
+      <div class="hero">
+        <div>
+          <h1>Elevate Your Workspace Efficiency.</h1>
+          <p>Discover high-quality ergonomic supplies and minimalist stationery built for modern productivity.</p>
+          <br>
+          <button class="btn-cta" onclick="showPage('store')">Shop Now</button>
+        </div>
+      </div>
+      <h2>Featured Products</h2>
+      <div id="featured-products" class="grid-3"></div>
+    </section>
+
+    <section id="page-store" style="display:none;">
+      <h2>All Office Supplies</h2>
+      <div id="all-products" class="grid-3"></div>
+    </section>
+
+    <section id="page-dashboard" style="display:none;">
+      <h2>User Dashboard</h2>
+      
+      <div id="seller-section" style="display:none; margin-bottom: 2rem;">
+        <h3>Post a Product for Sale</h3>
+        <form id="add-product-form">
+          <input type="text" id="prod-title" placeholder="Product Title" required><br><br>
+          <textarea id="prod-desc" placeholder="Product Description" required></textarea><br><br>
+          <input type="number" id="prod-price" placeholder="Price (PHP)" step="0.01" required><br><br>
+          <input type="url" id="prod-image" placeholder="Image URL" required><br><br>
+          <button type="submit" class="btn-cta">Publish Product</button>
+        </form>
+        <br><hr><br>
+        <h3>Your Sales History</h3>
+        <div id="sales-history"></div>
+      </div>
+
+      <div id="buyer-section" style="display:none;">
+        <h3>Your Purchase History</h3>
+        <div id="purchase-history"></div>
+      </div>
+    </section>
+
+    <section id="page-about" style="display:none;">
+      <h2>About DeskCraft</h2>
+      <p>DeskCraft provides high-tier office items for remote teams, enterprises, and individual professionals seeking functionality and clean aesthetics.</p>
+    </section>
+
+    <section id="page-contacts" style="display:none;">
+      <h2>Contact Us</h2>
+      <p>Email: support@deskcraft.com</p>
+      <p>Phone: +63 912 345 6789</p>
+    </section>
+  </main>
+
+  <div id="auth-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="modal-title">Sign In / Register</h3><br>
+      <form id="auth-form">
+        <input type="email" id="auth-email" placeholder="Email" required><br><br>
+        <input type="password" id="auth-password" placeholder="Password" required><br><br>
+        <input type="text" id="auth-name" placeholder="Full Name"><br><br>
+        <input type="text" id="auth-gcash" placeholder="GCash Mobile Number"><br><br>
+        <select id="auth-role">
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+        </select><br><br>
+        <button type="submit" class="btn-cta">Submit</button>
+        <button type="button" onclick="closeAuthModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h3>DeskCraft</h3>
+        <p>Your minimalist workspace partner.</p>
+      </div>
+      <div class="sitemap">
+        <h4>Sitemap</h4>
+        <ul>
+          <li><a onclick="showPage('home')">Home</a></li>
+          <li><a onclick="showPage('store')">Store Page</a></li>
+          <li><a onclick="showPage('about')">About Us</a></li>
+          <li><a onclick="showPage('contacts')">Contacts</a></li>
+        </ul>
+      </div>
+    </div>
+    <center><p>&copy; 2026 DeskCraft Inc. All Rights Reserved.</p></center>
+  </footer>
+
+  <script type="text/javascript">
+    (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        v.onload = function() {
+          window.voiceflow.chat.load({
+            verify: { projectID: 'YOUR_VOICEFLOW_PROJECT_ID' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production'
+          });
+        }
+        v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+    })(document, 'script');
+  </script>
+
+  <script src="/public/js/app.js"></script>
+</body>
+</html>
